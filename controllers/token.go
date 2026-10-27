@@ -230,6 +230,8 @@ func (c *ApiController) GetOAuthToken() {
 	countryCode := c.Ctx.Input.Query("country_code")
 	tag := c.Ctx.Input.Query("tag")
 	avatar := c.Ctx.Input.Query("avatar")
+	phoneCode := c.Ctx.Input.Query("phone_code")
+	phoneRequired := c.Ctx.Input.Query("phone_required") == "true"
 	refreshToken := c.Ctx.Input.Query("refresh_token")
 	deviceCode := c.Ctx.Input.Query("device_code")
 	subjectToken := c.Ctx.Input.Query("subject_token")
@@ -287,6 +289,12 @@ func (c *ApiController) GetOAuthToken() {
 			}
 			if avatar == "" {
 				avatar = tokenRequest.Avatar
+			}
+			if phoneCode == "" {
+				phoneCode = tokenRequest.PhoneCode
+			}
+			if !phoneRequired {
+				phoneRequired = tokenRequest.PhoneRequired
 			}
 			if refreshToken == "" {
 				refreshToken = tokenRequest.RefreshToken
@@ -394,7 +402,7 @@ func (c *ApiController) GetOAuthToken() {
 		return
 	}
 
-	token, err := object.GetOAuthToken(grantType, clientId, clientSecret, code, verifier, scope, nonce, username, password, countryCode, host, refreshToken, tag, avatar, c.GetAcceptLanguage(), subjectToken, subjectTokenType, assertion, clientAssertion, clientAssertionType, audience, resource, dpopProof, util.GetClientIpFromRequest(c.Ctx.Request))
+	token, err := object.GetOAuthToken(grantType, clientId, clientSecret, code, verifier, scope, nonce, username, password, countryCode, host, refreshToken, tag, avatar, phoneCode, phoneRequired, c.GetAcceptLanguage(), subjectToken, subjectTokenType, assertion, clientAssertion, clientAssertionType, audience, resource, dpopProof, util.GetClientIpFromRequest(c.Ctx.Request))
 	if err != nil {
 		c.ResponseError(err.Error())
 		return
